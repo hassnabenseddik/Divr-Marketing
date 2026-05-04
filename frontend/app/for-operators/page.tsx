@@ -19,7 +19,7 @@ const HERO_IMAGE =
 const BLOCKS = [
   {
     icon: <Percent className="h-6 w-6" strokeWidth={2.2} />,
-    title: 'Zero Commission for your first bookings',
+    title: 'Zero Commission to Start',
     description: 'Keep 100% of every booking during your first 10 bookings.',
   },
   {
