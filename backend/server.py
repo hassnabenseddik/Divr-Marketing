@@ -8,7 +8,7 @@ import os
 import logging
 import uuid
 from datetime import datetime, timezone, timedelta
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Optional
 
 import bcrypt
 import jwt
@@ -265,6 +265,96 @@ async def admin_summary(_admin=Depends(get_current_admin)):
     }
 
 
+# ---------- update payloads (all optional) ----------
+class WaitlistUpdate(BaseModel):
+    first_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
+    email: Optional[EmailStr] = None
+    country: Optional[str] = Field(default=None, min_length=2, max_length=120)
+    dive_region: Optional[Literal[
+        "Red Sea", "Southeast Asia", "Caribbean",
+        "Indian Ocean", "Mediterranean", "Other",
+    ]] = None
+
+
+class OperatorUpdate(BaseModel):
+    full_name: Optional[str] = Field(default=None, min_length=1, max_length=160)
+    dive_center_name: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    country: Optional[str] = Field(default=None, min_length=2, max_length=120)
+    destination: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    email: Optional[EmailStr] = None
+    whatsapp: Optional[str] = Field(default=None, min_length=5, max_length=40)
+    monthly_bookings: Optional[Literal["Under 10", "10 to 30", "30 to 100", "100+"]] = None
+
+
+class GuideUpdate(BaseModel):
+    full_name: Optional[str] = Field(default=None, min_length=1, max_length=160)
+    specialty: Optional[Literal[
+        "Freediving", "Technical Diving", "Underwater Photography",
+        "Marine Biology", "Night Diving", "General Guiding", "Other",
+    ]] = None
+    country: Optional[str] = Field(default=None, min_length=2, max_length=120)
+    base_location: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    certifications: Optional[str] = Field(default=None, min_length=1, max_length=2000)
+    email: Optional[EmailStr] = None
+    whatsapp: Optional[str] = Field(default=None, min_length=5, max_length=40)
+
+
+# ---------- generic helper ----------
+async def _patch_doc(collection, entry_model, entry_id: str, payload: BaseModel):
+    update = {k: v for k, v in payload.model_dump(exclude_unset=True).items() if v is not None}
+    if not update:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    result = await collection.find_one_and_update(
+        {"id": entry_id},
+        {"$set": update},
+        return_document=True,
+        projection={"_id": 0},
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    return entry_model(**result)
+
+
+async def _delete_doc(collection, entry_id: str):
+    result = await collection.delete_one({"id": entry_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    return {"ok": True, "id": entry_id}
+
+
+# ---------- waitlist edit/delete ----------
+@api_router.patch("/admin/waitlist/{entry_id}", response_model=WaitlistEntry)
+async def update_waitlist(entry_id: str, payload: WaitlistUpdate, _admin=Depends(get_current_admin)):
+    return await _patch_doc(db.waitlist_submissions, WaitlistEntry, entry_id, payload)
+
+
+@api_router.delete("/admin/waitlist/{entry_id}")
+async def delete_waitlist(entry_id: str, _admin=Depends(get_current_admin)):
+    return await _delete_doc(db.waitlist_submissions, entry_id)
+
+
+# ---------- operator edit/delete ----------
+@api_router.patch("/admin/operators/{entry_id}", response_model=OperatorEntry)
+async def update_operator(entry_id: str, payload: OperatorUpdate, _admin=Depends(get_current_admin)):
+    return await _patch_doc(db.operator_applications, OperatorEntry, entry_id, payload)
+
+
+@api_router.delete("/admin/operators/{entry_id}")
+async def delete_operator(entry_id: str, _admin=Depends(get_current_admin)):
+    return await _delete_doc(db.operator_applications, entry_id)
+
+
+# ---------- guide edit/delete ----------
+@api_router.patch("/admin/guides/{entry_id}", response_model=GuideEntry)
+async def update_guide(entry_id: str, payload: GuideUpdate, _admin=Depends(get_current_admin)):
+    return await _patch_doc(db.guide_applications, GuideEntry, entry_id, payload)
+
+
+@api_router.delete("/admin/guides/{entry_id}")
+async def delete_guide(entry_id: str, _admin=Depends(get_current_admin)):
+    return await _delete_doc(db.guide_applications, entry_id)
+
+
 # ---------- mount + middleware ----------
 app.include_router(api_router)
 
@@ -283,6 +373,40 @@ app.add_middleware(
 async def on_startup():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("id", unique=True)
+
+    # one-shot migration: old operator/guide docs had combined country fields
+    async for doc in db.operator_applications.find({"country_destination": {"$exists": True}}):
+        raw = str(doc.get("country_destination") or "").strip()
+        # split on common separators (em-dash, en-dash, hyphen)
+        for sep in (" — ", " – ", " - "):
+            if sep in raw:
+                country, destination = raw.split(sep, 1)
+                break
+        else:
+            country, destination = raw, raw
+        await db.operator_applications.update_one(
+            {"_id": doc["_id"]},
+            {
+                "$set": {"country": country.strip() or "Unknown", "destination": destination.strip() or raw},
+                "$unset": {"country_destination": ""},
+            },
+        )
+
+    async for doc in db.guide_applications.find({"country_base": {"$exists": True}}):
+        raw = str(doc.get("country_base") or "").strip()
+        for sep in (" — ", " – ", " - "):
+            if sep in raw:
+                country, base = raw.split(sep, 1)
+                break
+        else:
+            country, base = raw, raw
+        await db.guide_applications.update_one(
+            {"_id": doc["_id"]},
+            {
+                "$set": {"country": country.strip() or "Unknown", "base_location": base.strip() or raw},
+                "$unset": {"country_base": ""},
+            },
+        )
 
     admin_email = os.environ.get("ADMIN_EMAIL", "").lower().strip()
     admin_password = os.environ.get("ADMIN_PASSWORD", "")
