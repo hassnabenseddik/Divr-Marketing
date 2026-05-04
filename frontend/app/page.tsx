@@ -169,8 +169,7 @@ export default function HomePage() {
                   className="mt-4 px-2 text-sm leading-relaxed text-cream/55"
                   data-testid="operator-commission-note"
                 >
-                  10% commission after your first 10 bookings. Lower than PADI Travel and
-                  LiveAboard.com.
+                  10% commission after your first 10 bookings.
                 </p>
               </div>
             </div>
