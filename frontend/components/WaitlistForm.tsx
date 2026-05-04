@@ -20,6 +20,7 @@ export default function WaitlistForm() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     first_name: '',
+    last_name: '',
     email: '',
     country: '',
     dive_region: '',

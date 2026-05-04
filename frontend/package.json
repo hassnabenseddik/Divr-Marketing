@@ -10,7 +10,6 @@
     "expo": "node ./scripts/start.js"
   },
   "dependencies": {
-    "expo": "~54.0.34",
     "lucide-react": "^0.468.0",
     "next": "15.0.3",
     "react": "19.1.0",
