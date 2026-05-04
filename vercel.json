@@ -1,13 +1,9 @@
 {
-  "experimentalServices": {
-    "frontend": {
-      "entrypoint": "frontend",
-      "routePrefix": "/",
-      "framework": "nextjs"
-    },
-    "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/_/backend"
-    }
-  }
+  "framework": "nextjs",
+  "buildCommand": "cd frontend && yarn install && yarn build",
+  "outputDirectory": "frontend/.next",
+  "installCommand": "cd frontend && yarn install",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://YOUR-BACKEND-URL.com/api/:path*" }
+  ]
 }
