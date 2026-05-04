@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import SuccessMessage from './SuccessMessage';
 import { apiUrl } from '@/lib/api';
+import { COUNTRIES } from '@/lib/countries';
 
 const VOLUMES = ['Under 10', '10 to 30', '30 to 100', '100+'];
 
@@ -13,7 +14,8 @@ export default function OperatorForm() {
   const [form, setForm] = useState({
     full_name: '',
     dive_center_name: '',
-    country_destination: '',
+    country: '',
+    destination: '',
     email: '',
     whatsapp: '',
     monthly_bookings: '',
@@ -35,7 +37,7 @@ export default function OperatorForm() {
       });
       if (!res.ok) throw new Error('Submission failed');
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
@@ -68,11 +70,27 @@ export default function OperatorForm() {
       </div>
 
       <div>
-        <label htmlFor="op_country_dest" className="field-label">Country and Destination</label>
-        <input id="op_country_dest" name="country_destination" type="text" required
-          placeholder="e.g. Egypt — Sharm El Sheikh"
-          value={form.country_destination} onChange={onChange}
-          className="field-input" data-testid="operator-country-destination" />
+        <label htmlFor="op_country" className="field-label">Country</label>
+        <select id="op_country" name="country" required
+          value={form.country} onChange={onChange}
+          className="field-select" data-testid="operator-country">
+          <option value="" disabled>Select your country</option>
+          {COUNTRIES.map((c) =>
+            c.startsWith('─') ? (
+              <option key={c} disabled>{c}</option>
+            ) : (
+              <option key={c} value={c}>{c}</option>
+            ),
+          )}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="op_destination" className="field-label">Destination</label>
+        <input id="op_destination" name="destination" type="text" required
+          placeholder="e.g. Sharm El Sheikh"
+          value={form.destination} onChange={onChange}
+          className="field-input" data-testid="operator-destination" />
       </div>
 
       <div>
@@ -103,13 +121,10 @@ export default function OperatorForm() {
         </select>
       </div>
 
-      {error && (
-        <p className="text-sm text-red-300" data-testid="operator-error" role="alert">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-300" data-testid="operator-error" role="alert">{error}</p>}
 
       <button type="submit" disabled={submitting}
-        className="btn-lime w-full disabled:opacity-60"
-        data-testid="operator-submit">
+        className="btn-lime w-full disabled:opacity-60" data-testid="operator-submit">
         {submitting ? 'Submitting…' : 'Apply Now'}
       </button>
 

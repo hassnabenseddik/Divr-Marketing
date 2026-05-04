@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import SuccessMessage from './SuccessMessage';
 import { apiUrl } from '@/lib/api';
+import { COUNTRIES } from '@/lib/countries';
 
 const SPECIALTIES = [
   'Freediving',
@@ -21,14 +22,15 @@ export default function GuideForm() {
   const [form, setForm] = useState({
     full_name: '',
     specialty: '',
-    country_base: '',
+    country: '',
+    base_location: '',
     certifications: '',
     email: '',
     whatsapp: '',
   });
 
   const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
@@ -45,7 +47,7 @@ export default function GuideForm() {
       });
       if (!res.ok) throw new Error('Submission failed');
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
@@ -81,11 +83,27 @@ export default function GuideForm() {
       </div>
 
       <div>
-        <label htmlFor="g_country_base" className="field-label">Country and Base Location</label>
-        <input id="g_country_base" name="country_base" type="text" required
-          placeholder="e.g. Indonesia — Bali"
-          value={form.country_base} onChange={onChange}
-          className="field-input" data-testid="guide-country-base" />
+        <label htmlFor="g_country" className="field-label">Country</label>
+        <select id="g_country" name="country" required
+          value={form.country} onChange={onChange}
+          className="field-select" data-testid="guide-country">
+          <option value="" disabled>Select your country</option>
+          {COUNTRIES.map((c) =>
+            c.startsWith('─') ? (
+              <option key={c} disabled>{c}</option>
+            ) : (
+              <option key={c} value={c}>{c}</option>
+            ),
+          )}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="g_base_location" className="field-label">Base Location</label>
+        <input id="g_base_location" name="base_location" type="text" required
+          placeholder="e.g. Bali"
+          value={form.base_location} onChange={onChange}
+          className="field-input" data-testid="guide-base-location" />
       </div>
 
       <div>
@@ -114,13 +132,10 @@ export default function GuideForm() {
           className="field-input" data-testid="guide-whatsapp" />
       </div>
 
-      {error && (
-        <p className="text-sm text-red-300" data-testid="guide-error" role="alert">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-300" data-testid="guide-error" role="alert">{error}</p>}
 
       <button type="submit" disabled={submitting}
-        className="btn-lime w-full disabled:opacity-60"
-        data-testid="guide-submit">
+        className="btn-lime w-full disabled:opacity-60" data-testid="guide-submit">
         {submitting ? 'Submitting…' : 'Apply as a Guide'}
       </button>
 

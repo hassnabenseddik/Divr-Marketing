@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import SuccessMessage from './SuccessMessage';
 import { apiUrl } from '@/lib/api';
+import { COUNTRIES } from '@/lib/countries';
 
 const REGIONS = [
   'Red Sea',
@@ -40,7 +41,7 @@ export default function WaitlistForm() {
       });
       if (!res.ok) throw new Error('Submission failed');
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
@@ -60,79 +61,48 @@ export default function WaitlistForm() {
     <form onSubmit={onSubmit} className="space-y-5" data-testid="waitlist-form" noValidate>
       <div>
         <label htmlFor="first_name" className="field-label">First Name</label>
-        <input
-          id="first_name"
-          name="first_name"
-          type="text"
-          required
-          value={form.first_name}
-          onChange={onChange}
-          autoComplete="given-name"
-          className="field-input"
-          data-testid="waitlist-first-name"
-        />
+        <input id="first_name" name="first_name" type="text" required
+          value={form.first_name} onChange={onChange} autoComplete="given-name"
+          className="field-input" data-testid="waitlist-first-name" />
       </div>
 
       <div>
         <label htmlFor="email" className="field-label">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          value={form.email}
-          onChange={onChange}
-          autoComplete="email"
-          className="field-input"
-          data-testid="waitlist-email"
-        />
+        <input id="email" name="email" type="email" required
+          value={form.email} onChange={onChange} autoComplete="email"
+          className="field-input" data-testid="waitlist-email" />
       </div>
 
       <div>
         <label htmlFor="country" className="field-label">Country</label>
-        <input
-          id="country"
-          name="country"
-          type="text"
-          required
-          value={form.country}
-          onChange={onChange}
-          autoComplete="country-name"
-          className="field-input"
-          data-testid="waitlist-country"
-        />
+        <select id="country" name="country" required
+          value={form.country} onChange={onChange}
+          className="field-select" data-testid="waitlist-country">
+          <option value="" disabled>Select your country</option>
+          {COUNTRIES.map((c) =>
+            c.startsWith('─') ? (
+              <option key={c} disabled>{c}</option>
+            ) : (
+              <option key={c} value={c}>{c}</option>
+            ),
+          )}
+        </select>
       </div>
 
       <div>
         <label htmlFor="dive_region" className="field-label">Where do you dive most</label>
-        <select
-          id="dive_region"
-          name="dive_region"
-          required
-          value={form.dive_region}
-          onChange={onChange}
-          className="field-select"
-          data-testid="waitlist-region"
-        >
+        <select id="dive_region" name="dive_region" required
+          value={form.dive_region} onChange={onChange}
+          className="field-select" data-testid="waitlist-region">
           <option value="" disabled>Select a region</option>
-          {REGIONS.map((r) => (
-            <option key={r} value={r}>{r}</option>
-          ))}
+          {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
       </div>
 
-      {error && (
-        <p className="text-sm text-red-300" data-testid="waitlist-error" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-sm text-red-300" data-testid="waitlist-error" role="alert">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="btn-lime w-full disabled:opacity-60"
-        data-testid="waitlist-submit"
-      >
+      <button type="submit" disabled={submitting}
+        className="btn-lime w-full disabled:opacity-60" data-testid="waitlist-submit">
         {submitting ? 'Joining…' : 'Join the Waitlist'}
       </button>
 
