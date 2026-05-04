@@ -8,7 +8,7 @@ import os
 import logging
 import uuid
 from datetime import datetime, timezone, timedelta
-from typing import List, Literal, Optional, Optional
+from typing import List, Literal, Optional
 
 import bcrypt
 import jwt
