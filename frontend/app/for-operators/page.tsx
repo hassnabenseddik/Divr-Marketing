@@ -20,7 +20,7 @@ const BLOCKS = [
   {
     icon: <Percent className="h-6 w-6" strokeWidth={2.2} />,
     title: 'Zero Commission for 6 Months',
-    description: 'Keep 100% of every booking during your founding period.',
+    description: 'Keep 100% of every booking during your first 10 bookings.',
   },
   {
     icon: <ArrowUpRight className="h-6 w-6" strokeWidth={2.2} />,
@@ -43,10 +43,10 @@ export default function ForOperatorsPage() {
           imageUrl={HERO_IMAGE}
           imageAlt="Dive boat at anchor over a tropical reef"
           headline="Reach divers who are ready to book."
-          subline="Divr is building the marketplace operators actually want. Zero commission for founding partners. Full control over your listings. A global diver community sent directly to you."
+          subline="Divr is building the marketplace operators actually want. Zero commission for your first 10 bookings. Full control over your listings. Pre-qualified solo divers matched to your trip type."
         />
         <Benefits blocks={BLOCKS} />
-        <FormSection headline="Apply as a Founding Partner.">
+        <FormSection headline="Apply as Founding Operator.">
           <OperatorForm />
         </FormSection>
       </main>

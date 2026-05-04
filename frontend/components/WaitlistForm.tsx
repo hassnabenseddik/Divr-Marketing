@@ -103,7 +103,7 @@ export default function WaitlistForm() {
 
       <button type="submit" disabled={submitting}
         className="btn-lime w-full disabled:opacity-60" data-testid="waitlist-submit">
-        {submitting ? 'Joining…' : 'Join the Waitlist'}
+        {submitting ? 'Joining…' : 'Get Early Access'}
       </button>
 
       <p className="pt-2 text-center text-sm text-cream/45" data-testid="waitlist-helper">

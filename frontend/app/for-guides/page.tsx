@@ -24,8 +24,8 @@ const BLOCKS = [
   },
   {
     icon: <UserCircle2 className="h-6 w-6" strokeWidth={2.2} />,
-    title: 'Your Own Guide Profile',
-    description: 'Showcase your specialty, experience, and availability in one place.',
+    title: 'List Your Own Packages',
+    description: 'Create and manage your dive packages, workshops, and guided experiences in one place.',
   },
   {
     icon: <Compass className="h-6 w-6" strokeWidth={2.2} />,
@@ -42,8 +42,8 @@ export default function ForGuidesPage() {
         <Hero
           imageUrl={HERO_IMAGE}
           imageAlt="Dive guide leading divers through a clear blue passage"
-          headline="List your expertise. Fill your calendar."
-          subline="Whether you freelance, lead specialty dives, or offer private instruction, Divr connects you directly with divers looking for exactly what you offer. Zero commission for founding guides."
+          headline="List your packages. Fill your calendar."
+          subline="Whether you freelance, lead specialty dives, or offer private instruction, Divr connects you directly with divers looking for exactly what you offer. Zero commission for your first 10 bookings."
         />
         <Benefits blocks={BLOCKS} />
         <FormSection headline="Join as a Founding Guide.">

@@ -63,7 +63,7 @@ export default function OperatorForm() {
       </div>
 
       <div>
-        <label htmlFor="op_dive_center" className="field-label">Dive Center Name</label>
+        <label htmlFor="op_dive_center" className="field-label">Business Name</label>
         <input id="op_dive_center" name="dive_center_name" type="text" required
           value={form.dive_center_name} onChange={onChange}
           className="field-input" data-testid="operator-dive-center" />

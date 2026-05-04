@@ -34,7 +34,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link href="/waitlist" className={linkCls} data-testid="footer-waitlist">
-                  Join the Waitlist
+                  Get Early Access
                 </Link>
               </li>
             </ul>
@@ -49,7 +49,7 @@ export default function Footer() {
                   className={linkCls}
                   data-testid="footer-for-operators"
                 >
-                  Apply as Founding Partner
+                  List Your Trips First
                 </Link>
               </li>
               <li>

@@ -23,9 +23,9 @@ export default function WaitlistPage() {
           imageUrl={HERO_IMAGE}
           imageAlt="Diver swimming through a sunlit reef"
           headline="Your next dive crew is waiting."
-          subline="Divr connects you with verified operators, curated packages, and divers heading to the same destinations. Be first in when we launch."
+          subline="Divr connects you with verified operators and divers heading to the same destinations. Be first in when we launch."
         />
-        <FormSection headline="Join the Waitlist.">
+        <FormSection headline="Get Early Access.">
           <WaitlistForm />
         </FormSection>
       </main>
