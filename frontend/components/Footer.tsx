@@ -16,7 +16,8 @@ export default function Footer() {
               <Logo className="h-8 w-auto" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream/55">
-              The marketplace built for divers, operators, and independent guides.
+              The dive marketplace connecting certified divers with verified operators and guides
+              worldwide.
             </p>
             <p className="mt-5 text-sm text-cream/55">
               <a
@@ -65,21 +66,6 @@ export default function Footer() {
               <li>
                 <Link href="/about" className={linkCls} data-testid="footer-about">
                   About Divr
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className={linkCls} data-testid="footer-blog">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/careers" className={linkCls} data-testid="footer-careers">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="/press" className={linkCls} data-testid="footer-press">
-                  Press
                 </Link>
               </li>
             </ul>
