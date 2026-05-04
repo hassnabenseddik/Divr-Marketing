@@ -1,0 +1,48 @@
+{
+  "summary": "Full E2E test of Divr marketing MVP (Next.js 15 + FastAPI + MongoDB). 8/8 backend pytest cases pass against the public preview URL: health, POST /api/waitlist + admin GET, POST /api/operators + admin GET, POST /api/guides + admin GET, plus 3 validation cases (Literal enum + EmailStr 422). Frontend UI tested at 390x844 mobile viewport: home, /waitlist, /for-operators, /for-guides — all required headlines, helper texts, benefit blocks, button labels, and success messages render exactly as specified. All three forms successfully POST to the backend (201) via same-origin fetch and are replaced by the correct success message. Footer renders all required columns/links/copyright/trust line on every page; legal disclaimer is fully visible (not cut off) at 390px. No horizontal scroll on mobile, no console/page errors. MVP is functioning end-to-end.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "server.py", "issue": "`logger` is defined at the bottom of the file (line 165) but referenced inside route handlers (lines 63, 93, 126). It works because handlers run after import, but it is fragile — move logging.basicConfig + logger definition above the route handlers."},
+      {"endpoint": "server.py", "issue": "Unused import: `Optional` from typing is imported but never used."},
+      {"endpoint": "server.py", "issue": "`@app.on_event(\"shutdown\")` is deprecated in FastAPI ≥ 0.93; prefer the `lifespan` context manager. Non-blocking."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Footer (mobile 390px)", "issues": ["Footer link touch target height is ~22.5px (text-only links). For mobile this is below the recommended 44px minimum tap target. Acceptable for a marketing footer, but worth noting."]},
+      {"screen": "Forms", "issues": ["All three forms use `noValidate` on <form>, so the browser's native validation is suppressed. Required fields rely solely on backend 422 — frontend currently shows a generic 'Something went wrong. Please try again.' for any non-2xx (no field-level error surfacing). Not a blocker for MVP."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_divr_marketing.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Move logging.basicConfig and `logger = logging.getLogger(__name__)` to the top of /app/backend/server.py (above the route handlers) for clarity and robustness.",
+    "(Optional) Remove unused `Optional` import from server.py.",
+    "(Optional) Surface field-level validation errors in the three forms instead of a generic 'Something went wrong' message.",
+    "(Optional) Migrate `@app.on_event('shutdown')` to FastAPI lifespan handler."
+  ],
+  "critical_code_review_comments": [
+    "server.py is well within the 700-line limit (~170 lines), uses async Motor correctly, excludes _id ({\"_id\": 0} projection) on all admin GETs, uses Pydantic for input validation including EmailStr and Literal enums for dropdowns, returns proper 201/422 status codes, and reads MONGO_URL/DB_NAME from env.",
+    "Frontend uses Next.js 15 App Router + Tailwind correctly. All forms are 'use client', use proper form state, and replace the form on success via a single SuccessMessage component (DRY).",
+    "Same-origin /api fetch via lib/api.ts works through the ingress — no CORS issues observed.",
+    "All interactive elements (CTAs, form inputs, submits, footer links) have data-testid attributes."
+  ],
+  "updated_files": [
+    "/app/backend/tests/conftest.py (created)",
+    "/app/backend/tests/test_divr_marketing.py (created)",
+    "/app/test_reports/pytest/pytest_results.xml (generated)"
+  ],
+  "success_rate": {"backend": "100% (8/8)", "frontend": "100% (all required flows)"},
+  "seed_data_creation": "No persistent seed data. Each pytest run inserts uniquely-marked TEST_ documents (TEST_wl_<ts>@example.com etc.) into MongoDB collections waitlist_submissions, operator_applications, guide_applications. Browser test additionally inserts ui_wl_/ui_op_/ui_g_ entries. These can be safely cleaned up with: db.waitlist_submissions.deleteMany({email: /^TEST_|^ui_/}), same for the other two collections.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Public origin: https://a6522686-f800-45e0-acd7-ed01d9df0901.preview.emergentagent.com — ingress routes /api/* → FastAPI on :8001, everything else → Next.js dev server on :3000. Mongo collections: waitlist_submissions, operator_applications, guide_applications. All POST endpoints return 201 with the persisted entity (id, source, created_at ISO). Admin GETs at /api/admin/{waitlist,operators,guides} return arrays sorted by created_at desc. Forms use noValidate so validation is server-side only (422). Tests live in /app/backend/tests/test_divr_marketing.py and use BASE_URL hardcoded to the public preview origin via conftest.py.",
+  "rca_of_issue": "N/A — no issues. Note: during the very first browser test attempt, the waitlist form click did not fire a fetch; the cause was that the page was clicked before client-side React hydration finished (no `wait_for_load_state('networkidle')` before the click). After adding the wait, all three form submissions worked on first try and the backend received 201s. This is a test-script issue only and does not affect real users."
+}

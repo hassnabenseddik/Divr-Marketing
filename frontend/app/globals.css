@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: #0B1C2D;
+    color: #F6F1E8;
+    font-family: var(--font-manrope), system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  /* Native autofill kills our dark inputs in Chrome — keep them on-brand */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  textarea:-webkit-autofill {
+    -webkit-text-fill-color: #F6F1E8;
+    -webkit-box-shadow: 0 0 0px 1000px #13283F inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-container px-5 sm:px-8 lg:px-10;
+  }
+
+  .btn-lime {
+    @apply inline-flex items-center justify-center rounded-full bg-lime px-7 py-4 text-base font-semibold text-navy shadow-[0_8px_30px_rgba(183,243,74,0.35)] transition-all hover:bg-lime-bright hover:shadow-[0_12px_40px_rgba(183,243,74,0.5)] active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime;
+  }
+
+  .field-label {
+    @apply mb-2 block text-sm font-medium text-cream/85;
+  }
+
+  .field-input {
+    @apply w-full rounded-xl border border-white/10 bg-navy-soft px-4 py-3.5 text-cream placeholder:text-cream/40 outline-none transition focus:border-lime/60 focus:ring-2 focus:ring-lime/30;
+  }
+
+  .field-select {
+    @apply field-input appearance-none bg-[length:18px] bg-[right_1rem_center] bg-no-repeat pr-12;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23B7F34A' stroke-width='2.2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e");
+  }
+}
+
+/* hero overlay gradient — keeps text legible while showing the underwater photo */
+.hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(11, 28, 45, 0.55) 0%, rgba(11, 28, 45, 0.65) 55%, rgba(11, 28, 45, 0.95) 100%),
+    radial-gradient(120% 80% at 50% 20%, rgba(11,28,45,0.25) 0%, rgba(11,28,45,0.65) 70%, rgba(11,28,45,0.92) 100%);
+}
