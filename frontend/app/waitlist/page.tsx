@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1682687982360-3fbab65f9d50?auto=format&fit=crop&w=1920&q=70';
+  'https://customer-assets.emergentagent.com/job_divr-guides/artifacts/hwioxf4v_Group%20Scuba%20Divers.jpeg';
 
 export default function WaitlistPage() {
   return (

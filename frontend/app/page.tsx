@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1646947009718-1cb77aaa2a6d?auto=format&fit=crop&w=1920&q=70';
+  'https://customer-assets.emergentagent.com/job_divr-guides/artifacts/hwioxf4v_Group%20Scuba%20Divers.jpeg';
 
 const STEPS = [
   {

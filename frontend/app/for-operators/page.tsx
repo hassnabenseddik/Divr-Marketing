@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=1920&q=70';
+  'https://customer-assets.emergentagent.com/job_divr-guides/artifacts/k5s8izg4_Instructor.jpeg';
 
 const BLOCKS = [
   {
