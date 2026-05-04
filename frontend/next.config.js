@@ -7,15 +7,20 @@ const nextConfig = {
       { protocol: 'https', hostname: 'customer-assets.emergentagent.com' },
     ],
   },
-  // In production (Vercel) the /api proxy is handled by vercel.json rewrites
-  // pointing at the deployed FastAPI backend (Render / Railway / etc).
-  // In development we proxy /api locally to the Uvicorn dev server on :8001.
+  // /api/* proxy:
+  //   • Local dev → Uvicorn on http://localhost:8001
+  //   • Production (Vercel) → set BACKEND_URL env var to your Render URL
+  //     e.g. BACKEND_URL=https://divr-api.onrender.com
+  // If BACKEND_URL is not set in production, the rewrite is skipped and the
+  // browser can call the backend directly via NEXT_PUBLIC_BACKEND_URL.
   async rewrites() {
-    if (process.env.NODE_ENV === 'production') return [];
+    const isProd = process.env.NODE_ENV === 'production';
+    const target = process.env.BACKEND_URL || (isProd ? '' : 'http://localhost:8001');
+    if (!target) return [];
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8001/api/:path*',
+        destination: `${target}/api/:path*`,
       },
     ];
   },
