@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/[0.06] bg-navy-deep" data-testid="site-footer">
       <div className="container-x py-14 sm:py-20">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             <Link href="/" aria-label="Divr — home" className="inline-flex">
               <Logo className="h-8 w-auto" />
@@ -21,10 +21,10 @@ export default function Footer() {
             </p>
             <p className="mt-5 text-sm text-cream/55">
               <a
-                href="mailto:hello@divrworld.com"
+                href="mailto:divr@divrworld.com"
                 className="text-cream/70 transition hover:text-lime"
               >
-                hello@divrworld.com
+                divr@divrworld.com
               </a>
             </p>
           </div>
@@ -55,17 +55,6 @@ export default function Footer() {
               <li>
                 <Link href="/for-guides" className={linkCls} data-testid="footer-for-guides">
                   Independent Guides
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className={colHeading}>Company</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/about" className={linkCls} data-testid="footer-about">
-                  About Divr
                 </Link>
               </li>
             </ul>

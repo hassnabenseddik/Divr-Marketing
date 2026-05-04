@@ -11,17 +11,17 @@ const STEPS = [
   {
     icon: <UserCircle2 className="h-6 w-6" strokeWidth={2.2} />,
     title: 'Set Your Profile',
-    body: 'Add your certification, dive count, and interests. Help us show you the right trips and crew.',
+    body: 'Add your certification, dive count, and interests. Find trips with divers at your level.',
   },
   {
     icon: <SlidersHorizontal className="h-6 w-6" strokeWidth={2.2} />,
-    title: 'Filter Your Matches',
+    title: 'Filter Trips and Crew',
     body: 'Browse trips and filter by experience level, certification required, and dive focus. See who\u2019s already joined.',
   },
   {
     icon: <ShieldCheck className="h-6 w-6" strokeWidth={2.2} />,
     title: 'Book When Group Fills',
-    body: 'Reserve your spot. The trip confirms once the minimum group size is reached. Payments held in escrow until confirmed.',
+    body: 'Reserve your spot. Your booking is confirmed once the group reaches minimum size. Payment held in escrow until then.',
   },
 ];
 
@@ -137,8 +137,8 @@ export default function HomePage() {
                   className="mt-5 max-w-xl text-lg leading-relaxed text-cream/70"
                   data-testid="operator-subline"
                 >
-                  Divers on Divr filter by certification, experience, and interests &mdash; so
-                  the ones who book are already qualified and aligned with your trip type.
+                  Divers on Divr filter by certification, experience, and interests. The ones
+                  who book are already qualified for your trip type.
                 </p>
 
                 <Link
@@ -165,6 +165,13 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
+                <p
+                  className="mt-4 px-2 text-sm leading-relaxed text-cream/55"
+                  data-testid="operator-commission-note"
+                >
+                  10% commission after your first 10 bookings. Lower than PADI Travel and
+                  LiveAboard.com.
+                </p>
               </div>
             </div>
           </div>
