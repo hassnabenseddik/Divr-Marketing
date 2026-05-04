@@ -70,24 +70,6 @@ export default function Header() {
           <Link href="/#how-it-works" className={`${navLink} px-3 py-2`} data-testid="header-how-it-works">
             How It Works
           </Link>
-
-          <Link
-            href="#"
-            aria-disabled="true"
-            className={`${navLink} px-3 py-2`}
-            data-testid="header-sign-in"
-          >
-            Sign In
-          </Link>
-
-          <Link
-            href="#"
-            aria-disabled="true"
-            className="inline-flex items-center justify-center rounded-full bg-lime px-5 py-2.5 text-[15px] font-semibold text-navy transition hover:bg-lime-bright"
-            data-testid="header-sign-up"
-          >
-            Sign Up
-          </Link>
         </nav>
 
         {/* Mobile toggle */}

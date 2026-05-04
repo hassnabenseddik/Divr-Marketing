@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1682687982360-3fbab65f9d50?auto=format&fit=crop&w=1920&q=70';
+  'https://images.unsplash.com/photo-1646947009718-1cb77aaa2a6d?auto=format&fit=crop&w=1920&q=70';
 
 const STEPS = [
   {
@@ -63,7 +63,7 @@ export default function HomePage() {
                 data-testid="hero-subline"
               >
                 Filter by certification, experience, and dive interests. See who&rsquo;s already
-                joined. Book once your group reaches minimum size.
+                joined. Your booking is confirmed once your group reaches minimum size.
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
