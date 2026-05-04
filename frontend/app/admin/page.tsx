@@ -31,13 +31,15 @@ const SPECIALTIES = [
 const SCHEMA: Record<TabKey, FieldDef[]> = {
   waitlist: [
     { key: 'first_name', label: 'First Name', type: 'text' },
+    { key: 'last_name', label: 'Last Name', type: 'text' },
     { key: 'email', label: 'Email', type: 'email' },
     { key: 'country', label: 'Country', type: 'select-country' },
     { key: 'dive_region', label: 'Dive Region', type: 'select', options: REGIONS },
   ],
   operators: [
-    { key: 'full_name', label: 'Full Name', type: 'text' },
-    { key: 'dive_center_name', label: 'Dive Center', type: 'text' },
+    { key: 'first_name', label: 'First Name', type: 'text' },
+    { key: 'last_name', label: 'Last Name', type: 'text' },
+    { key: 'dive_center_name', label: 'Business Name', type: 'text' },
     { key: 'country', label: 'Country', type: 'select-country' },
     { key: 'destination', label: 'Destination', type: 'text' },
     { key: 'email', label: 'Email', type: 'email' },
@@ -45,7 +47,8 @@ const SCHEMA: Record<TabKey, FieldDef[]> = {
     { key: 'monthly_bookings', label: 'Monthly Bookings', type: 'select', options: VOLUMES },
   ],
   guides: [
-    { key: 'full_name', label: 'Full Name', type: 'text' },
+    { key: 'first_name', label: 'First Name', type: 'text' },
+    { key: 'last_name', label: 'Last Name', type: 'text' },
     { key: 'specialty', label: 'Specialty', type: 'select', options: SPECIALTIES },
     { key: 'country', label: 'Country', type: 'select-country' },
     { key: 'base_location', label: 'Base Location', type: 'text' },
@@ -309,7 +312,7 @@ export default function AdminDashboardPage() {
         <ConfirmModal
           title="Delete this entry?"
           body={`This will permanently delete the ${TAB_LABELS[tab].toLowerCase()} entry for "${
-            String(deletingRow.email ?? deletingRow.full_name ?? deletingRow.first_name ?? deletingRow.id)
+            String(deletingRow.email ?? `${deletingRow.first_name ?? ''} ${deletingRow.last_name ?? ''}`.trim() ?? deletingRow.id)
           }". This cannot be undone.`}
           confirmLabel="Delete"
           danger

@@ -20,7 +20,8 @@ export default function GuideForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    full_name: '',
+    first_name: '',
+    last_name: '',
     specialty: '',
     country: '',
     base_location: '',
@@ -65,11 +66,19 @@ export default function GuideForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5" data-testid="guide-form" noValidate>
-      <div>
-        <label htmlFor="g_full_name" className="field-label">Full Name</label>
-        <input id="g_full_name" name="full_name" type="text" required
-          value={form.full_name} onChange={onChange} autoComplete="name"
-          className="field-input" data-testid="guide-full-name" />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label htmlFor="g_first_name" className="field-label">First Name</label>
+          <input id="g_first_name" name="first_name" type="text" required
+            value={form.first_name} onChange={onChange} autoComplete="given-name"
+            className="field-input" data-testid="guide-first-name" />
+        </div>
+        <div>
+          <label htmlFor="g_last_name" className="field-label">Last Name</label>
+          <input id="g_last_name" name="last_name" type="text" required
+            value={form.last_name} onChange={onChange} autoComplete="family-name"
+            className="field-input" data-testid="guide-last-name" />
+        </div>
       </div>
 
       <div>

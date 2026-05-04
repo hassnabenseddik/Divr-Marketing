@@ -59,11 +59,19 @@ export default function WaitlistForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5" data-testid="waitlist-form" noValidate>
-      <div>
-        <label htmlFor="first_name" className="field-label">First Name</label>
-        <input id="first_name" name="first_name" type="text" required
-          value={form.first_name} onChange={onChange} autoComplete="given-name"
-          className="field-input" data-testid="waitlist-first-name" />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label htmlFor="first_name" className="field-label">First Name</label>
+          <input id="first_name" name="first_name" type="text" required
+            value={form.first_name} onChange={onChange} autoComplete="given-name"
+            className="field-input" data-testid="waitlist-first-name" />
+        </div>
+        <div>
+          <label htmlFor="last_name" className="field-label">Last Name</label>
+          <input id="last_name" name="last_name" type="text" required
+            value={form.last_name} onChange={onChange} autoComplete="family-name"
+            className="field-input" data-testid="waitlist-last-name" />
+        </div>
       </div>
 
       <div>

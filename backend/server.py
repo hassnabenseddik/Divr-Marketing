@@ -147,6 +147,7 @@ async def auth_me(current=Depends(get_current_admin)):
 # ---------- waitlist (Divers) ----------
 class WaitlistCreate(BaseModel):
     first_name: str = Field(min_length=1, max_length=120)
+    last_name: str = Field(min_length=1, max_length=120)
     email: EmailStr
     country: str = Field(min_length=2, max_length=120)
     dive_region: Literal[
@@ -155,7 +156,13 @@ class WaitlistCreate(BaseModel):
     ]
 
 
-class WaitlistEntry(WaitlistCreate):
+class WaitlistEntry(BaseModel):
+    # response model — relaxed validation so legacy rows (no last_name) still serialise
+    first_name: str = ""
+    last_name: str = ""
+    email: EmailStr
+    country: str = ""
+    dive_region: str = ""
     id: str
     source: Literal["waitlist"]
     created_at: str
@@ -176,7 +183,8 @@ async def create_waitlist(payload: WaitlistCreate):
 
 # ---------- operators ----------
 class OperatorCreate(BaseModel):
-    full_name: str = Field(min_length=1, max_length=160)
+    first_name: str = Field(min_length=1, max_length=120)
+    last_name: str = Field(min_length=1, max_length=120)
     dive_center_name: str = Field(min_length=1, max_length=200)
     country: str = Field(min_length=2, max_length=120)
     destination: str = Field(min_length=1, max_length=200)
@@ -185,7 +193,15 @@ class OperatorCreate(BaseModel):
     monthly_bookings: Literal["Under 10", "10 to 30", "30 to 100", "100+"]
 
 
-class OperatorEntry(OperatorCreate):
+class OperatorEntry(BaseModel):
+    first_name: str = ""
+    last_name: str = ""
+    dive_center_name: str = ""
+    country: str = ""
+    destination: str = ""
+    email: EmailStr
+    whatsapp: str = ""
+    monthly_bookings: str = ""
     id: str
     source: Literal["for-operators"]
     created_at: str
@@ -200,13 +216,14 @@ async def create_operator(payload: OperatorCreate):
         **payload.model_dump(),
     )
     await db.operator_applications.insert_one(entry.model_dump())
-    logger.info("operator application: %s — %s", entry.dive_center_name, entry.email)
+    logger.info("operator application: %s, %s", entry.dive_center_name, entry.email)
     return entry
 
 
 # ---------- guides ----------
 class GuideCreate(BaseModel):
-    full_name: str = Field(min_length=1, max_length=160)
+    first_name: str = Field(min_length=1, max_length=120)
+    last_name: str = Field(min_length=1, max_length=120)
     specialty: Literal[
         "Freediving", "Technical Diving", "Underwater Photography",
         "Marine Biology", "Night Diving", "General Guiding", "Other",
@@ -218,7 +235,15 @@ class GuideCreate(BaseModel):
     whatsapp: str = Field(min_length=5, max_length=40)
 
 
-class GuideEntry(GuideCreate):
+class GuideEntry(BaseModel):
+    first_name: str = ""
+    last_name: str = ""
+    specialty: str = ""
+    country: str = ""
+    base_location: str = ""
+    certifications: str = ""
+    email: EmailStr
+    whatsapp: str = ""
     id: str
     source: Literal["for-guides"]
     created_at: str
@@ -233,7 +258,7 @@ async def create_guide(payload: GuideCreate):
         **payload.model_dump(),
     )
     await db.guide_applications.insert_one(entry.model_dump())
-    logger.info("guide application: %s (%s)", entry.full_name, entry.specialty)
+    logger.info("guide application: %s %s (%s)", entry.first_name, entry.last_name, entry.specialty)
     return entry
 
 
@@ -268,6 +293,7 @@ async def admin_summary(_admin=Depends(get_current_admin)):
 # ---------- update payloads (all optional) ----------
 class WaitlistUpdate(BaseModel):
     first_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
+    last_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
     email: Optional[EmailStr] = None
     country: Optional[str] = Field(default=None, min_length=2, max_length=120)
     dive_region: Optional[Literal[
@@ -277,7 +303,8 @@ class WaitlistUpdate(BaseModel):
 
 
 class OperatorUpdate(BaseModel):
-    full_name: Optional[str] = Field(default=None, min_length=1, max_length=160)
+    first_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
+    last_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
     dive_center_name: Optional[str] = Field(default=None, min_length=1, max_length=200)
     country: Optional[str] = Field(default=None, min_length=2, max_length=120)
     destination: Optional[str] = Field(default=None, min_length=1, max_length=200)
@@ -287,7 +314,8 @@ class OperatorUpdate(BaseModel):
 
 
 class GuideUpdate(BaseModel):
-    full_name: Optional[str] = Field(default=None, min_length=1, max_length=160)
+    first_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
+    last_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
     specialty: Optional[Literal[
         "Freediving", "Technical Diving", "Underwater Photography",
         "Marine Biology", "Night Diving", "General Guiding", "Other",
@@ -407,6 +435,27 @@ async def on_startup():
                 "$unset": {"country_base": ""},
             },
         )
+
+    # split legacy `full_name` into first_name + last_name on operators & guides
+    for coll in (db.operator_applications, db.guide_applications):
+        async for doc in coll.find({"full_name": {"$exists": True}}):
+            raw = str(doc.get("full_name") or "").strip()
+            parts = raw.split(None, 1)  # split on first whitespace run
+            first = parts[0] if parts else ""
+            last = parts[1] if len(parts) > 1 else ""
+            await coll.update_one(
+                {"_id": doc["_id"]},
+                {
+                    "$set": {"first_name": first or "Unknown", "last_name": last or "Unknown"},
+                    "$unset": {"full_name": ""},
+                },
+            )
+
+    # backfill last_name on legacy waitlist rows so admin list/edit always works
+    await db.waitlist_submissions.update_many(
+        {"last_name": {"$exists": False}},
+        {"$set": {"last_name": ""}},
+    )
 
     admin_email = os.environ.get("ADMIN_EMAIL", "").lower().strip()
     admin_password = os.environ.get("ADMIN_PASSWORD", "")
