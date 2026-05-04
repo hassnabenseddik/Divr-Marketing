@@ -17,6 +17,13 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field, EmailStr
 
+from emails import (
+    send_admin_notification,
+    send_guide_confirmation,
+    send_operator_confirmation,
+    send_waitlist_confirmation,
+)
+
 
 # ---------- logging ----------
 logging.basicConfig(
@@ -178,6 +185,16 @@ async def create_waitlist(payload: WaitlistCreate):
     )
     await db.waitlist_submissions.insert_one(entry.model_dump())
     logger.info("waitlist signup: %s (%s)", entry.email, entry.dive_region)
+    send_waitlist_confirmation(to=entry.email, first_name=entry.first_name)
+    send_admin_notification(
+        form_type="waitlist",
+        first_name=entry.first_name,
+        last_name=entry.last_name,
+        email=entry.email,
+        country=entry.country,
+        timestamp=entry.created_at,
+        extras={"Dive region": entry.dive_region},
+    )
     return entry
 
 
@@ -217,6 +234,25 @@ async def create_operator(payload: OperatorCreate):
     )
     await db.operator_applications.insert_one(entry.model_dump())
     logger.info("operator application: %s, %s", entry.dive_center_name, entry.email)
+    send_operator_confirmation(
+        to=entry.email,
+        first_name=entry.first_name,
+        business_name=entry.dive_center_name,
+    )
+    send_admin_notification(
+        form_type="operator",
+        first_name=entry.first_name,
+        last_name=entry.last_name,
+        email=entry.email,
+        country=entry.country,
+        timestamp=entry.created_at,
+        extras={
+            "Business name": entry.dive_center_name,
+            "Destination": entry.destination,
+            "WhatsApp": entry.whatsapp,
+            "Monthly bookings": entry.monthly_bookings,
+        },
+    )
     return entry
 
 
@@ -259,6 +295,21 @@ async def create_guide(payload: GuideCreate):
     )
     await db.guide_applications.insert_one(entry.model_dump())
     logger.info("guide application: %s %s (%s)", entry.first_name, entry.last_name, entry.specialty)
+    send_guide_confirmation(to=entry.email, first_name=entry.first_name)
+    send_admin_notification(
+        form_type="guide",
+        first_name=entry.first_name,
+        last_name=entry.last_name,
+        email=entry.email,
+        country=entry.country,
+        timestamp=entry.created_at,
+        extras={
+            "Specialty": entry.specialty,
+            "Base location": entry.base_location,
+            "Certifications": entry.certifications,
+            "WhatsApp": entry.whatsapp,
+        },
+    )
     return entry
 
 
